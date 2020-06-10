@@ -246,10 +246,18 @@ class MultiProcess(events.Plugin):
                         if test.__class__.__name__ == "_MethodTestCase":
                             # wrapped by MethodTestCase in testclasses.py
                             test = test.obj
-                        classes.setdefault(
-                            "%s.%s" % (test.__class__.__module__,
-                                       test.__class__.__name__),
-                            []).append(testid)
+                        if hasattr(test, '_testMethodName') and test._testMethodName:
+                            # test a single method under the test class
+                            yield "%s.%s.%s" % (
+                                    test.__class__.__module__,
+                                    test.__class__.__name__,
+                                    test._testMethodName,
+                                    )
+                        else:
+                            classes.setdefault(
+                                "%s.%s" % (test.__class__.__module__,
+                                           test.__class__.__name__),
+                                []).append(testid)
                     else:
                         yield testid
 
